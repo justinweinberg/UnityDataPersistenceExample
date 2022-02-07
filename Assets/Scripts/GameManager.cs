@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour
     {
        
         InitInstance();
+        LoadHighScoreData();
     }
 
     //Init using Unity singleton pattern
@@ -75,12 +76,13 @@ public class GameManager : MonoBehaviour
 #endif
     }
 
-    public void SetHighScoreIfHigher(string player, int score)
+    public void SetHighScoreIfHigherAndSave(int points)
     {
-        if (String.IsNullOrEmpty(this._highScoreData.Player) || score >= this._highScoreData.Score)
+        if (points >= this._highScoreData.Score)
         {
-            this._highScoreData.Player = player;
-            this._highScoreData.Score = score;
+            this._highScoreData.Player = PlayerName;
+            this._highScoreData.Score = points;
+            SaveHighScoreData();
         }
     }
 
@@ -101,6 +103,7 @@ public class GameManager : MonoBehaviour
         {
             var json = File.ReadAllText(scoreDataPath());
             _highScoreData = JsonUtility.FromJson<HighScoreData>(json);
+            HighScoreTextbox.text = HighScoreText;
         }
         catch (Exception)
         {
@@ -114,9 +117,9 @@ public class GameManager : MonoBehaviour
         get
         {
             if (!string.IsNullOrWhiteSpace(_highScoreData.Player))
-                return $"High Score: {_highScoreData.Player} - {_highScoreData.Score}";
+                return $"High Score: {_highScoreData.Player} ({_highScoreData.Score})";
 
-            return string.Empty;
+            return "High Score: Be the first!";
         }
     }
 
